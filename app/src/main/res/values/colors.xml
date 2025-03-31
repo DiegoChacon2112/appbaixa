@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema Vermelho Escuro -->
+    <color name="colorPrimary">#8B0000</color>         <!-- Vermelho escuro -->
+    <color name="colorPrimaryDark">#660000</color>     <!-- Vermelho mais escuro -->
+    <color name="colorAccent">#D32F2F</color>          <!-- Vermelho mais claro -->
+
+    <!-- Cores do sistema que você pode ter referenciado no código -->
+    <color name="purple_200">#8B0000</color>           <!-- Substituído pelo vermelho -->
+    <color name="purple_500">#8B0000</color>           <!-- Substituído pelo vermelho -->
+    <color name="purple_700">#660000</color>           <!-- Substituído pelo vermelho escuro -->
+    <color name="teal_200">#D32F2F</color>             <!-- Substituído pelo vermelho claro -->
+    <color name="teal_700">#B71C1C</color>             <!-- Substituído pelo vermelho médio -->
+
+    <!-- Cores básicas -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red">#CC0000</color>                  <!-- Para splash screen -->
+
+    <!-- Cores adicionais para uso em componentes -->
+    <color name="colorTextLight">#FFFFFF</color>
+    <color name="colorTextDark">#333333</color>
+    <color name="colorBackgroundLight">#FAFAFA</color>
+</resources>
