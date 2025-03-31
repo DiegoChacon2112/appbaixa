@@ -1,9 +1,9 @@
 package com.example.controleestoque.repository
 
 import com.example.controleestoque.network.BaixaEstoqueApi
-import com.example.controleestoque.network.BaixaEstoqueRequest
-import com.example.controleestoque.network.BaixaEstoqueResponse
 import com.example.controleestoque.network.RetrofitConfig
+import com.example.controleestoque.data.BaixaEstoqueRequest  // Alterado para usar do pacote data
+import com.example.controleestoque.data.BaixaEstoqueResponse // Alterado para usar do pacote data
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

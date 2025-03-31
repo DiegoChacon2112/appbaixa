@@ -1,13 +1,12 @@
 package com.example.controleestoque.network
 
+import com.example.controleestoque.data.BaixaEstoqueRequest
+import com.example.controleestoque.data.BaixaEstoqueResponse
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.POST
-import retrofit2.Response
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -59,18 +58,3 @@ object RetrofitConfig {
 
     val baixaEstoqueApi: BaixaEstoqueApi = retrofit.create(BaixaEstoqueApi::class.java)
 }
-
-interface BaixaEstoqueApi {
-    @POST("VKBAIXAEST")
-    suspend fun baixarEstoque(@Body request: BaixaEstoqueRequest): Response<BaixaEstoqueResponse>
-}
-
-data class BaixaEstoqueRequest(
-    val codigo: String,
-    val quantidade: Int
-)
-
-data class BaixaEstoqueResponse(
-    val sucess: Boolean,
-    val message: String
-)

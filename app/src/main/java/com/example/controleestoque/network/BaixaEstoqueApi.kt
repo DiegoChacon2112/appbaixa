@@ -1,8 +1,7 @@
-// BaixaEstoqueApi.kt
 package com.example.controleestoque.network
 
-import com.example.controleestoque.data.BaixaEstoqueRequest
-import com.example.controleestoque.data.BaixaEstoqueResponse
+import com.example.controleestoque.data.BaixaEstoqueRequest  // Importação do pacote data
+import com.example.controleestoque.data.BaixaEstoqueResponse // Importação do pacote data
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

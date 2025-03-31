@@ -1,8 +1,11 @@
 package com.example.controleestoque.screens.detail
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -40,6 +45,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -72,10 +79,40 @@ fun DetailScreen(
     val showConfirmDialog = remember { mutableStateOf(false) }
     var quantidadeBaixa by remember { mutableStateOf("1") } // Valor padrão de 1
 
+    // Estado da UI para a operação de baixa
+    val uiState by viewModel.uiState.collectAsState()
+    var showToast by remember { mutableStateOf(false) }
+    var toastMessage by remember { mutableStateOf("") }
+    var isSuccess by remember { mutableStateOf(true) }
+
     // Data e hora atual formatada
     val dataHoraAtual = remember {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         LocalDateTime.now().format(formatter)
+    }
+
+    // Efeito para monitorar mudanças no estado
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is DetailViewModel.UiState.Success -> {
+                showToast = true
+                toastMessage = (uiState as DetailViewModel.UiState.Success).message
+                isSuccess = true
+                delay(2000) // Exibe a mensagem de sucesso por 2 segundos
+                showToast = false
+                // Se for bem-sucedido, voltar para a tela anterior
+                delay(500)
+                onNavigateBack()
+            }
+            is DetailViewModel.UiState.Error -> {
+                showToast = true
+                toastMessage = (uiState as DetailViewModel.UiState.Error).message
+                isSuccess = false
+                delay(2000) // Exibe a mensagem de erro por 2 segundos
+                showToast = false
+            }
+            else -> {}
+        }
     }
 
     Scaffold(
@@ -459,11 +496,9 @@ fun DetailScreen(
                     confirmButton = {
                         Button(
                             onClick = {
-                                // Aqui você implementaria a lógica para realizar a baixa no sistema
-                                // Por exemplo, chamar um método do viewModel
-                                // viewModel.realizarBaixa(barcodeData, quantidade, dataHoraAtual)
+                                // Chamar o método do viewModel para realizar a baixa
+                                viewModel.realizarBaixa(barcodeData, quantidade)
                                 showConfirmDialog.value = false
-                                // Pode adicionar lógica para mostrar um toast de sucesso
                             }
                         ) {
                             Text("Confirmar")
@@ -479,6 +514,63 @@ fun DetailScreen(
                         }
                     }
                 )
+            }
+
+            // Toast animado para mostrar mensagens de sucesso ou erro
+            AnimatedVisibility(
+                visible = showToast,
+                enter = fadeIn(animationSpec = tween(500)) +
+                        slideInVertically(animationSpec = tween(500), initialOffsetY = { -it }),
+                exit = fadeOut(animationSpec = tween(500)) +
+                        slideOutVertically(animationSpec = tween(500), targetOffsetY = { -it })
+            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isSuccess) Color(0xFFDFF0D8) else Color(0xFFF8D7DA)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = if (isSuccess) Icons.Default.Check else Icons.Default.Error,
+                            contentDescription = null,
+                            tint = if (isSuccess) Color.Green else Color(0xFFDC3545)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = toastMessage,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if (isSuccess) Color(0xFF155724) else Color(0xFF721C24)
+                        )
+                    }
+                }
+            }
+
+            // Overlay de carregamento para operação de baixa
+            if (uiState is DetailViewModel.UiState.Loading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(color = Color.White)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Processando baixa...",
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
             }
         }
     }
